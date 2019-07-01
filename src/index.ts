@@ -1,26 +1,8 @@
+import splitString from './split-string'
+
 enum Language {
   en,
   jp
-}
-
-function splitString(elm: string | undefined, open: boolean): [string | undefined, boolean] {
-  if (elm) {
-    return [
-      elm.split('').map((char: string) => {
-        if (char === '|') {
-          open = !open
-          return ''
-        } else if (open) {
-          return char
-        } else {
-          return ''
-        }
-      }).join(),
-      open
-    ]
-  } else {
-    return [open ? elm : undefined, open]
-  }
 }
 
 function splitTextRun(elm: GoogleAppsScript.Docs.Schema.TextRun, open: boolean): [GoogleAppsScript.Docs.Schema.TextRun, boolean] {
@@ -143,7 +125,7 @@ function main() {
   const jpDoc = Docs.Documents.get(jpId)
   jpDoc.body.content = []
 
-  let open = false
+  let open = true
   doc.body.content.forEach((se) => {
     const [jpElement, isOpen] = splitStructuralElement(se, open)
     open = isOpen
