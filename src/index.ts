@@ -32,7 +32,7 @@ function splitParagraph(paragraph: Schema.Paragraph, open: boolean): [Schema.Par
         } else {
           return res
         }
-      }, [])
+      }, [] as Schema.ParagraphElement[])
     return [{ ...paragraph, ...{ elements } }, isOpen]
   } else {
     return [open ? paragraph : undefined, open]
@@ -51,7 +51,7 @@ function splitTableCell(tableCell: Schema.TableCell, open: boolean): [Schema.Tab
         } else {
           return res
         }
-      }, [])
+      }, [] as Schema.StructuralElement[])
     return [{ ...tableCell, ...{ content } }, isOpen]
   } else {
     return [open ? tableCell : undefined, open]
@@ -70,14 +70,14 @@ function splitTableRow(tableRow: Schema.TableRow, open: boolean): [Schema.TableR
         } else {
           return res
         }
-      }, [])
+      }, [] as Schema.TableCell[])
     return [{ ...tableRow, ...{ tableCells } }, isOpen]
   } else {
     return [open ? tableRow : undefined, open]
   }
 }
 
-function splitTable(table: Schema.Table, open: boolean): [Schema.Table, boolean] {
+function splitTable(table: Schema.Table, open: boolean): [Schema.Table | undefined, boolean] {
   if (table.tableRows) {
     let isOpen = open
     const tableRows = table.tableRows.reduce((res, tableRow) => {
@@ -88,10 +88,28 @@ function splitTable(table: Schema.Table, open: boolean): [Schema.Table, boolean]
       } else {
         return res
       }
-    }, [])
+    }, [] as Schema.TableRow[])
     return [{ ...table, ...{ tableRows } }, isOpen]
   } else {
     return [(open ? table : undefined), open]
+  }
+}
+
+function splitTableOfContents(tableOfContents: Schema.TableOfContents, open: boolean): [Schema.TableOfContents | undefined, boolean] {
+  if (tableOfContents.content instanceof Array) {
+    let isOpen = open
+    const content = tableOfContents.content.reduce((res, elm) => {
+      const [newElm, newOpen] = splitStructuralElement(elm, isOpen)
+      isOpen = newOpen
+      if (newElm) {
+        return res.concat(newElm)
+      } else {
+        return res
+      }
+    }, [] as Schema.StructuralElement[])
+    return [{ ...tableOfContents, ...{ content } }, isOpen]
+  } else {
+    return [(open ? tableOfContents : undefined), open]
   }
 }
 
@@ -108,6 +126,11 @@ function splitStructuralElement(elm: Schema.StructuralElement, open: boolean): [
 
     const [table, isOpen] = splitTable(elm.table, open)
     return [{ ...elm, ...{ table } }, isOpen]
+  } else if (elm.tableOfContents) {
+    if (!open) return [undefined, open]
+
+    const [tableOfContents, isOpen] = splitTableOfContents(elm.tableOfContents, open)
+    return [{ ...elm, ...{ tableOfContents } }, isOpen]
   } else {
     return [(open ? elm : undefined), open]
   }
@@ -121,17 +144,33 @@ function copyFile(fromId: string, newFileName: string) {
 
 function main() {
   const documentId = "1CVzQfBa6L9-ZSm7E9WVzlwY9jGmljl1sRTfaiYFGqNU"
+  if (!(Docs.Documents instanceof Object)) {
+    console.log('Can not use Docs api')
+    return
+  }
   const doc = Docs.Documents.get(documentId)
+  if (doc === undefined) {
+    console.log("Can not open doc")
+    return
+  }
   const jpId = copyFile(documentId, 'jp')
   const jpDoc = Docs.Documents.get(jpId)
-  jpDoc.body.content = []
+  if (jpDoc === undefined) {
+    console.log("Can not copy document.")
+    return
+  }
 
   let open = true
-  doc.body.content.forEach((se) => {
-    const [jpElement, isOpen] = splitStructuralElement(se, open)
-    open = isOpen
-    if (jpElement) {
-      jpDoc.body.content.push(jpElement)
-    }
-  })
+  if (doc.body !== undefined && doc.body.content !== undefined &&
+    jpDoc.body !== undefined && (jpDoc.body.content instanceof Array)) {
+    const content = jpDoc.body.content
+
+    doc.body.content.forEach((se) => {
+      const [jpElement, isOpen] = splitStructuralElement(se, open)
+      open = isOpen
+      if (jpElement !== undefined) {
+        content.push(jpElement)
+      }
+    })
+  }
 }
