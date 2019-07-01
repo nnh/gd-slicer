@@ -73,9 +73,18 @@ function splitLoop(parent: Document.Body | Document.TableCell | Document.Paragra
 
 function main() {
   const documentId = "1CVzQfBa6L9-ZSm7E9WVzlwY9jGmljl1sRTfaiYFGqNU"
-  const jpId = copyFile(documentId, 'jp')
-  const jpDoc = DocumentApp.openById(jpId)
-  let open = true
-  splitLoop(jpDoc.getBody(), open)
-  jpDoc.saveAndClose()
+  {
+    const jpId = copyFile(documentId, 'jp')
+    const jpDoc = DocumentApp.openById(jpId)
+    let open = true
+    splitLoop(jpDoc.getBody(), open)
+    jpDoc.saveAndClose()
+  }
+  {
+    const enId = copyFile(documentId, 'en')
+    const enDoc = DocumentApp.openById(enId)
+    let open = false
+    splitLoop(enDoc.getBody(), open)
+    enDoc.saveAndClose()
+  }
 }
