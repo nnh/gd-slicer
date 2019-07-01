@@ -1,16 +1,17 @@
 import splitString from './split-string'
+import Schema = GoogleAppsScript.Docs.Schema
 
 enum Language {
   en,
   jp
 }
 
-function splitTextRun(elm: GoogleAppsScript.Docs.Schema.TextRun, open: boolean): [GoogleAppsScript.Docs.Schema.TextRun, boolean] {
+function splitTextRun(elm: Schema.TextRun, open: boolean): [Schema.TextRun, boolean] {
   const [content, isOpen] = splitString(elm.content, open)
   return [{ ...elm, ...{ content: content } }, isOpen]
 }
 
-function splitParagraphElement(elm: GoogleAppsScript.Docs.Schema.ParagraphElement, open: boolean): [GoogleAppsScript.Docs.Schema.ParagraphElement | undefined, boolean] {
+function splitParagraphElement(elm: Schema.ParagraphElement, open: boolean): [Schema.ParagraphElement | undefined, boolean] {
   if (elm.textRun) {
     const [textRun, isOpen] = splitTextRun(elm.textRun, open)
     return [{ ...elm, ...{ textRun: textRun } }, isOpen]
@@ -19,7 +20,7 @@ function splitParagraphElement(elm: GoogleAppsScript.Docs.Schema.ParagraphElemen
   }
 }
 
-function splitParagraph(paragraph: GoogleAppsScript.Docs.Schema.Paragraph, open: boolean): [GoogleAppsScript.Docs.Schema.Paragraph | undefined, boolean] {
+function splitParagraph(paragraph: Schema.Paragraph, open: boolean): [Schema.Paragraph | undefined, boolean] {
   if (paragraph.elements) {
     let isOpen = open
     const elements =
@@ -38,7 +39,7 @@ function splitParagraph(paragraph: GoogleAppsScript.Docs.Schema.Paragraph, open:
   }
 }
 
-function splitTableCell(tableCell: GoogleAppsScript.Docs.Schema.TableCell, open: boolean): [GoogleAppsScript.Docs.Schema.TableCell | undefined, boolean] {
+function splitTableCell(tableCell: Schema.TableCell, open: boolean): [Schema.TableCell | undefined, boolean] {
   if (tableCell.content) {
     let isOpen = open
     const content =
@@ -57,7 +58,7 @@ function splitTableCell(tableCell: GoogleAppsScript.Docs.Schema.TableCell, open:
   }
 }
 
-function splitTableRow(tableRow: GoogleAppsScript.Docs.Schema.TableRow, open: boolean): [GoogleAppsScript.Docs.Schema.TableRow | undefined, boolean] {
+function splitTableRow(tableRow: Schema.TableRow, open: boolean): [Schema.TableRow | undefined, boolean] {
   if (tableRow.tableCells) {
     let isOpen = open
     const tableCells =
@@ -76,7 +77,7 @@ function splitTableRow(tableRow: GoogleAppsScript.Docs.Schema.TableRow, open: bo
   }
 }
 
-function splitTable(table: GoogleAppsScript.Docs.Schema.Table, open: boolean): [GoogleAppsScript.Docs.Schema.Table, boolean] {
+function splitTable(table: Schema.Table, open: boolean): [Schema.Table, boolean] {
   if (table.tableRows) {
     let isOpen = open
     const tableRows = table.tableRows.reduce((res, tableRow) => {
@@ -94,7 +95,7 @@ function splitTable(table: GoogleAppsScript.Docs.Schema.Table, open: boolean): [
   }
 }
 
-function splitStructuralElement(elm: GoogleAppsScript.Docs.Schema.StructuralElement, open: boolean): [GoogleAppsScript.Docs.Schema.StructuralElement | undefined, boolean] {
+function splitStructuralElement(elm: Schema.StructuralElement, open: boolean): [Schema.StructuralElement | undefined, boolean] {
   if (elm.paragraph) {
     const [paragraph, isOpen] = splitParagraph(elm.paragraph, open)
     if (paragraph) {
