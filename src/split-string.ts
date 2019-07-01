@@ -10,7 +10,7 @@ export default function splitString(elm: string | undefined, open: boolean): [st
         } else {
           return ''
         }
-      }).join(),
+      }).join(''),
       open
     ]
   } else {
