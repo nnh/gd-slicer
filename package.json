@@ -1,0 +1,17 @@
+{
+  "name": "protocol-splitter",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "Private",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/google-apps-script": "^0.0.53",
+    "@typescript-eslint/eslint-plugin": "^1.10.2",
+    "@typescript-eslint/parser": "^1.10.2",
+    "clasp": "^1.0.0",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^5.0.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "prettier": "^1.18.2"
+  }
+}
