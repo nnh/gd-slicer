@@ -7,6 +7,7 @@
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/google-apps-script": "^0.0.53",
+    "@types/mocha": "^5.2.7",
     "@typescript-eslint/eslint-plugin": "^1.10.2",
     "@typescript-eslint/parser": "^1.10.2",
     "chai": "^4.2.0",
