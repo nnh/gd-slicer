@@ -28,7 +28,7 @@ function splitChild(element: Document.Element, open: boolean): [boolean, boolean
           const row = element.asTable().getRow(r)
           for (let c = 0; c < row.getNumCells(); ++c) {
             const cell = row.getCell(c)
-            isOpen = splitLoop(cell, isOpen)
+            isOpen = splitChildren(cell, isOpen)
           }
         }
         return [isOpen, false]
@@ -36,11 +36,11 @@ function splitChild(element: Document.Element, open: boolean): [boolean, boolean
         return [false, true]
       }
     case DocumentApp.ElementType.LIST_ITEM: {
-      open = splitLoop(element.asListItem(), open)
+      open = splitChildren(element.asListItem(), open)
       return [open, false]
     }
     case DocumentApp.ElementType.PARAGRAPH: {
-      open = splitLoop(element.asParagraph(), open)
+      open = splitChildren(element.asParagraph(), open)
       return [open, false]
     }
     default:
@@ -52,7 +52,7 @@ function splitChild(element: Document.Element, open: boolean): [boolean, boolean
   }
 }
 
-function splitLoop(parent: Document.Body | Document.TableCell | Document.Paragraph | Document.ListItem, open: boolean): boolean {
+function splitChildren(parent: Document.Body | Document.TableCell | Document.Paragraph | Document.ListItem, open: boolean): boolean {
   for (let i = 0; i < parent.getNumChildren(); ++i) {
     const child = parent.getChild(i)
     const [isOpen, remove] = splitChild(child, open)
@@ -72,14 +72,14 @@ function main() {
     const jpId = copyFile(documentId, 'jp')
     const jpDoc = DocumentApp.openById(jpId)
     let open = true
-    splitLoop(jpDoc.getBody(), open)
+    splitChildren(jpDoc.getBody(), open)
     jpDoc.saveAndClose()
   }
   {
     const enId = copyFile(documentId, 'en')
     const enDoc = DocumentApp.openById(enId)
     let open = false
-    splitLoop(enDoc.getBody(), open)
+    splitChildren(enDoc.getBody(), open)
     enDoc.saveAndClose()
   }
 }
