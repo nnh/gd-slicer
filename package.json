@@ -20,5 +20,9 @@
     "ts-mocha": "^6.0.0",
     "typescript": "^3.5.2",
     "typescript-language-server": "^0.3.8"
+  },
+  "scripts": {
+    "start": "clasp push -w",
+    "test": "ts-mocha test/*.test.ts"
   }
 }
