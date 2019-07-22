@@ -67,16 +67,18 @@ function splitChildren(parent: Document.Body | Document.TableCell | Document.Par
 }
 
 function main() {
-  const documentId = "1qw_Cl8_DqQAAmXSE-1aZTVGY2XkvCfnE5qr9Mo4eEf4"
+  const doc = DocumentApp.getActiveDocument()
+  const documentId = doc.getId()
+  const name = doc.getName()
   {
-    const jpId = copyFile(documentId, 'jp')
+    const jpId = copyFile(documentId, name + 'jp')
     const jpDoc = DocumentApp.openById(jpId)
     let open = true
     splitChildren(jpDoc.getBody(), open)
     jpDoc.saveAndClose()
   }
   {
-    const enId = copyFile(documentId, 'en')
+    const enId = copyFile(documentId, name + 'en')
     const enDoc = DocumentApp.openById(enId)
     let open = false
     splitChildren(enDoc.getBody(), open)
