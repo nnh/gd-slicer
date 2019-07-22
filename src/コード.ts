@@ -2,6 +2,9 @@ function onOpen() {
   DocumentApp.getUi().createMenu('チェック')
       .addItem('実行', 'check')
       .addToUi();
+  DocumentApp.getUi().createMenu('拡張')
+      .addItem('日英分割', 'main')
+      .addToUi();
 }
 
 function check() {
