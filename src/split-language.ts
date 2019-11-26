@@ -1,11 +1,6 @@
 import { splitString } from './split-string'
+import { copyFile } from './docs-utils'
 import Document = GoogleAppsScript.Document
-
-function copyFile(fromId: string, newFileName: string) {
-  const org = DriveApp.getFileById(fromId);
-  const newFile = org.makeCopy(newFileName);
-  return newFile.getId()
-}
 
 function splitChild(element: Document.Element, open: boolean): [boolean, boolean] {
   const elementType = element.getType()
