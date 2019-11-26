@@ -1,4 +1,4 @@
-import splitString from './split-string'
+import { splitString } from './split-string'
 import Document = GoogleAppsScript.Document
 
 function copyFile(fromId: string, newFileName: string) {
