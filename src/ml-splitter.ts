@@ -24,10 +24,10 @@ export function getMaximumLanguageIndex(str: string): LanguageIndex {
     return undefined
   } else {
     const ls = splitLanguageSentences(str).reverse()
-    let maximumIndex = 0
+    let maximumIndex: LanguageIndex = undefined
     ls.forEach(ls => {
       if (ls.languageIndex !== undefined) {
-        maximumIndex = Math.max(ls.languageIndex, maximumIndex)
+        maximumIndex = Math.max(ls.languageIndex, maximumIndex == undefined ? 0 : maximumIndex)
       }
     })
     return maximumIndex
