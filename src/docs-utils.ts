@@ -14,9 +14,6 @@ export function reverseChild(element: Document.Element,
                              parent: ParentalElement,
                              callback: EachChildCallback,
                              eachElementCallback?: EachElementCallback): void {
-  if (eachElementCallback) {
-    console.log({reverseChild: element.getType()})
-  }
   const elementType = element.getType()
   switch (elementType) {
     case DocumentApp.ElementType.TABLE: {

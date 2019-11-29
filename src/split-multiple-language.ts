@@ -21,7 +21,6 @@ function filterLanguage(body: Document.Body, targetIndex: number) {
   let index = 0
   reverseChildren(body, (element) => {    
     const elementType = element.getType()
-    console.log({func: 'reverseChildrenCallback', elementType})
     let indexChanged = false
     if (elementType === DocumentApp.ElementType.TEXT) {
       const oldText = element.asText().getText()
@@ -34,13 +33,10 @@ function filterLanguage(body: Document.Body, targetIndex: number) {
       }).filter(ls => ls.fixedLanguageIndex === targetIndex || ls.fixedLanguageIndex === 1).map(ls => ls.str).join('')
       element.asText().setText(newText)
       deleting = index !== targetIndex && index !== 1 && newText.length === 0
-      console.log({deleting, oldText, newText, index })
     }
     return index != targetIndex && !indexChanged
   }, (child, parent) => {
-    console.log({func: 'eachElementCallback', deleting, getType: child.getType()})
     if (deleting && child.getType() !== DocumentApp.ElementType.PARAGRAPH) {
-      console.log('DELETING!')
       parent.removeChild(child)
     }
   })
@@ -49,7 +45,6 @@ function filterLanguage(body: Document.Body, targetIndex: number) {
 function splitMultipleLanguageById(documentId: string) {
   const doc = DocumentApp.openById(documentId)
   const maximumLanguageIndex = getMaximumLanguageIndexFromBody(doc.getBody())
-  console.log({maximumLanguageIndex})
   const name = doc.getName()
   for (let i = 2; i < maximumLanguageIndex + 1; ++i) {
     const copiedName = name + '_' + i.toString()
