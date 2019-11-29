@@ -12,4 +12,7 @@ describe("getMaximumLanguageIndex", () => {
     it("returns 2 by first two breaks", () => assert.equal(getMaximumLanguageIndex('abc||def|'), 2))
     it("returns 2 by last two breaks", () => assert.equal(getMaximumLanguageIndex('abc|def||'), 2))
   })
+  context('with splitter only', () => {
+    it("returns 3 by a splitter only", () => assert.equal(getMaximumLanguageIndex('|||'), 3))
+  })
 })
