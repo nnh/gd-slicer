@@ -4,7 +4,10 @@ import { matches } from './string-utils'
 // number: インデックス確定済み
 export type LanguageIndex = number | undefined
 export type LanguagedString = [LanguageIndex, string]
-export type FixedLanguagedString = [number, string]
+export interface FixedLanguagedString {
+  str: string
+  fixedLanguageIndex: number
+}
 export interface LanguageSentence {
   str: string
   languageIndex: LanguageIndex

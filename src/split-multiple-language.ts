@@ -30,8 +30,9 @@ function filterLanguage(body: Document.Body, targetIndex: number) {
           index = ls.languageIndex
           indexChanged = true
         }
-        return [index, ls.str] as FixedLanguagedString
-      }).filter(ls => ls[0] === targetIndex).join('')
+        return { str: ls.str, fixedLanguageIndex: index } as FixedLanguagedString
+      }).filter(ls => ls.fixedLanguageIndex === targetIndex || ls.fixedLanguageIndex === 1).map(ls => ls.str).join('')
+      console.log({targetIndex, oldText, newText, index})
       element.asText().setText(newText)
     }
     return index != targetIndex && !indexChanged
@@ -43,7 +44,7 @@ function splitMultipleLanguageById(documentId: string) {
   const maximumLanguageIndex = getMaximumLanguageIndexFromBody(doc.getBody())
   console.log({maximumLanguageIndex})
   const name = doc.getName()
-  for (let i = 0; i < maximumLanguageIndex + 1; ++i) {
+  for (let i = 2; i < maximumLanguageIndex + 1; ++i) {
     const copiedName = name + '_' + i.toString()
     const copiedId = copyFile(documentId, copiedName)
     const copiedDoc = DocumentApp.openById(copiedId)
