@@ -1,7 +1,6 @@
 import { copyFile, reverseChildren } from './docs-utils'
 import { getMaximumLanguageIndex, FixedLanguagedString, splitLanguageSentences } from './ml-splitter'
 import Document = GoogleAppsScript.Document
-import { matches } from './string-utils'
 
 function getMaximumLanguageIndexFromBody(body: Document.Body): number {
   let maximumLanguageIndex = 0
@@ -13,15 +12,16 @@ function getMaximumLanguageIndexFromBody(body: Document.Body): number {
         maximumLanguageIndex = Math.max(maximumLanguageIndex, index)
       }
     }
-    return false
   })
   return maximumLanguageIndex
 }
 
 function filterLanguage(body: Document.Body, targetIndex: number) {
+  let deleting = false
   let index = 0
-  reverseChildren(body, (element) => {
+  reverseChildren(body, (element) => {    
     const elementType = element.getType()
+    console.log({func: 'reverseChildrenCallback', elementType})
     let indexChanged = false
     if (elementType === DocumentApp.ElementType.TEXT) {
       const oldText = element.asText().getText()
@@ -32,10 +32,17 @@ function filterLanguage(body: Document.Body, targetIndex: number) {
         }
         return { str: ls.str, fixedLanguageIndex: index } as FixedLanguagedString
       }).filter(ls => ls.fixedLanguageIndex === targetIndex || ls.fixedLanguageIndex === 1).map(ls => ls.str).join('')
-      console.log({targetIndex, oldText, newText, index})
       element.asText().setText(newText)
+      deleting = index !== targetIndex && index !== 1 && newText.length === 0
+      console.log({deleting, oldText, newText, index })
     }
     return index != targetIndex && !indexChanged
+  }, (child, parent) => {
+    console.log({func: 'eachElementCallback', deleting, getType: child.getType()})
+    if (deleting && child.getType() !== DocumentApp.ElementType.PARAGRAPH) {
+      console.log('DELETING!')
+      parent.removeChild(child)
+    }
   })
 }
 
