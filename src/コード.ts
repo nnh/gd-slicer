@@ -4,6 +4,7 @@ function onOpen() {
       .addToUi();
   DocumentApp.getUi().createMenu('拡張')
       .addItem('日英分割', 'splitLanguage')
+      .addItem('複数言語分割', 'splitMultipleLanguage')
       .addToUi();
 }
 
