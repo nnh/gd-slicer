@@ -11,10 +11,8 @@ export function getMaximumLanguageIndex(str: string): LanguageIndex {
     return undefined
   } else {
     const mm = matches(RegExp('([^|]+)(\\|+)?','g'), str)
-    console.log({mm, str})
     let maximumIndex = 0
     mm.reverse().forEach(m => {
-      debugger
       if (m[2] !== undefined) {
         maximumIndex = Math.max(m[2].length, maximumIndex)
       }
