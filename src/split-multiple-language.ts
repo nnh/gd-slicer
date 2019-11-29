@@ -54,7 +54,7 @@ function splitMultipleLanguageById(documentId: string) {
 
 
 function test() {
-  const documentId = "1CVzQfBa6L9-ZSm7E9WVzlwY9jGmljl1sRTfaiYFGqNU"
+  const documentId = "1GYO4JgdVfXLsMQqmM-ngqxyvp0K8MfTe2gX4wq7ngBQ"
   splitMultipleLanguageById(documentId)
 }
 
