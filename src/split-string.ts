@@ -1,4 +1,4 @@
-export default function splitString(elm: string, open: boolean): [string, boolean] {
+export function splitString(elm: string, open: boolean): [string, boolean] {
   return [
     elm.split('').map((char: string) => {
       if (char === '|') {

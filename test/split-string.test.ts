@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import splitString from "../src/split-string.ts";
+import { splitString } from "../src/split-string";
 
 describe("splitString", () => {
   context('opened', () => {
