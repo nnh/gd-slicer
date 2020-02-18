@@ -130,3 +130,9 @@ yarn start
 ``` shell
 yarn test
 ```
+
+
+License
+-------
+gd-slicer is licensed under the [MIT](#) license.  
+Copyright &copy; 2019, NHO Nagoya Medical Center and NPO-OSCR
