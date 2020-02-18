@@ -1,6 +1,7 @@
 # Google Document Slicer
 
-![./images/preview.png]()
+![](images/preview.png)
+
 Google Document で書かれた文章を日本語と英語に分割するスクリプトです
 日本語の部分はそのまま記述し、英語の部分を `|` と `|` で囲う事で多国語のドキュメント生成を可能にします
 
