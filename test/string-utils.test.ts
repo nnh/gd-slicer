@@ -5,4 +5,9 @@ describe("matches", () => {
   context('mutiple matches', () => {
     it('returns spletted chars', () => expect(matches(/[a-z]/g, 'abc').map(m => m[0])).to.eql(['a', 'b', 'c']))
   })
+  context('with multilanguage matcher', () => {
+    it('returns spletted sentences', () => {
+      expect(matches(/([^|]+$|[^|]*\|+)/g, '||| ').map(m => m[0])).to.eql(['|||', ' '])
+    })
+  })
 })
