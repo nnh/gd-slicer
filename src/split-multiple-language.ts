@@ -16,6 +16,17 @@ function getMaximumLanguageIndexFromBody(body: Document.Body): number {
   return maximumLanguageIndex
 }
 
+export function getNewText(index: number, indexChanged: boolean, oldText: string, targetIndex: number) {
+  const newText = splitLanguageSentences(oldText).reverse().map(ls => {
+    if (ls.languageIndex !== undefined) {
+      index = ls.languageIndex
+      indexChanged = true
+    }
+    return { str: ls.str, fixedLanguageIndex: index } as FixedLanguagedString
+  }).filter(ls => ls.fixedLanguageIndex === targetIndex || ls.fixedLanguageIndex === 1).map(ls => ls.str).reverse().join('')
+  return {newIndex: index, newIndexChanged: indexChanged, newText}
+}
+
 function filterLanguage(body: Document.Body, targetIndex: number) {
   let deleting = false
   let index = 0
@@ -24,13 +35,9 @@ function filterLanguage(body: Document.Body, targetIndex: number) {
     let indexChanged = false
     if (elementType === DocumentApp.ElementType.TEXT) {
       const oldText = element.asText().getText()
-      const newText = splitLanguageSentences(oldText).reverse().map(ls => {
-        if (ls.languageIndex !== undefined) {
-          index = ls.languageIndex
-          indexChanged = true
-        }
-        return { str: ls.str, fixedLanguageIndex: index } as FixedLanguagedString
-      }).filter(ls => ls.fixedLanguageIndex === targetIndex || ls.fixedLanguageIndex === 1).map(ls => ls.str).join('')
+      const {newIndex, newIndexChanged, newText} = getNewText(index, indexChanged, oldText, targetIndex)
+      index = newIndex
+      indexChanged = newIndexChanged      
       element.asText().setText(newText)
       deleting = index !== targetIndex && index !== 1 && newText.length === 0
     }
@@ -55,9 +62,8 @@ function splitMultipleLanguageById(documentId: string) {
   }
 }
 
-
 function test() {
-  const documentId = "1GYO4JgdVfXLsMQqmM-ngqxyvp0K8MfTe2gX4wq7ngBQ"
+  const documentId = "10Yiokp8UucMInZVl7e5n1ISTOEP69shA5u5vXBy7h3A"
   splitMultipleLanguageById(documentId)
 }
 
