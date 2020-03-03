@@ -1,5 +1,19 @@
-import { assert } from "chai";
-import { getMaximumLanguageIndex } from "../src/ml-splitter"
+import { assert, expect } from "chai";
+import { getMaximumLanguageIndex, splitLanguageSentences } from "../src/ml-splitter"
+
+describe('splitLanguageSentences', () => {
+  context('with ended by | string', () => {
+    it('returns empty array', () => assert.deepEqual(splitLanguageSentences(' |||'), [{str: ' ', languageIndex: 3}]))
+  })
+  context('without ended by | string', () => {
+    it('returns two elements', () => {
+      assert.deepEqual(splitLanguageSentences('||| '), [{str: '', languageIndex: 3}, {str: ' ', languageIndex: undefined}])
+    })
+  })
+  context('empty string', () => {
+    it('returns empty array', () => assert.deepEqual(splitLanguageSentences(''), []))
+  })
+})
 
 describe("getMaximumLanguageIndex", () => {
   context('with a single sentence', () => {
@@ -14,5 +28,7 @@ describe("getMaximumLanguageIndex", () => {
   })
   context('with splitter only', () => {
     it("returns 3 by a splitter only", () => assert.equal(getMaximumLanguageIndex('|||'), 3))
+    it("returns 3 by a splitter and space", () => assert.equal(getMaximumLanguageIndex('||| '), 3))
   })
 })
+
