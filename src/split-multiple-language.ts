@@ -29,7 +29,7 @@ export function getNewText(index: number, indexChanged: boolean, oldText: string
 
 function filterLanguage(body: Document.Body, targetIndex: number) {
   let deleting = false
-  let index = 0
+  let index = 1
   reverseChildren(body, (element) => {    
     const elementType = element.getType()
     let indexChanged = false
