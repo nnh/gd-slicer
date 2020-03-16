@@ -30,7 +30,6 @@ function filterLanguage(body: Document.Body, targetIndex: number) {
       element.asText().setText(newText)
       deleting = index !== targetIndex && index !== 1 && newText.length === 0
     }
-    return index != targetIndex && !indexChanged
   }, (child, parent) => {
     if (deleting && child.getType() !== DocumentApp.ElementType.PARAGRAPH) {
       parent.removeChild(child)
