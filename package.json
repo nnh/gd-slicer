@@ -4,21 +4,21 @@
   "main": "index.js",
   "license": "Private",
   "dependencies": {
-    "@google/clasp": "^2.3.0"
+    "@google/clasp": "*"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.7",
-    "@types/google-apps-script": "^0.0.53",
-    "@types/mocha": ">=5.2.7",
+    "@types/chai": "*",
+    "@types/google-apps-script": "*",
+    "@types/mocha": "*",
     "@typescript-eslint/eslint-plugin": "*",
     "@typescript-eslint/parser": "*",
-    "chai": "^4.2.0",
+    "chai": "*",
     "eslint": "*",
     "eslint-config-prettier": "*",
     "eslint-plugin-prettier": "*",
-    "mocha": "^6.1.4",
-    "prettier": "^1.18.2",
-    "ts-mocha": "^6.0.0",
+    "mocha": "*",
+    "prettier": "*",
+    "ts-mocha": "*",
     "typescript": "*",
     "typescript-language-server": "*"
   },
