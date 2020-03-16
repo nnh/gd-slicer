@@ -1,5 +1,5 @@
 import { copyFile, reverseChildren } from './docs-utils'
-import { getMaximumLanguageIndex, FixedLanguagedString, splitLanguageSentences } from './ml-splitter'
+import { getMaximumLanguageIndex, getNewText } from './ml-splitter'
 import Document = GoogleAppsScript.Document
 
 function getMaximumLanguageIndexFromBody(body: Document.Body): number {
@@ -16,28 +16,17 @@ function getMaximumLanguageIndexFromBody(body: Document.Body): number {
   return maximumLanguageIndex
 }
 
-export function getNewText(index: number, indexChanged: boolean, oldText: string, targetIndex: number) {
-  const newText = splitLanguageSentences(oldText).reverse().map(ls => {
-    if (ls.languageIndex !== undefined) {
-      index = ls.languageIndex
-      indexChanged = true
-    }
-    return { str: ls.str, fixedLanguageIndex: index } as FixedLanguagedString
-  }).filter(ls => ls.fixedLanguageIndex === targetIndex || ls.fixedLanguageIndex === 1).map(ls => ls.str).reverse().join('')
-  return {newIndex: index, newIndexChanged: indexChanged, newText}
-}
-
 function filterLanguage(body: Document.Body, targetIndex: number) {
   let deleting = false
   let index = 1
-  reverseChildren(body, (element) => {    
+  reverseChildren(body, (element) => {
     const elementType = element.getType()
     let indexChanged = false
     if (elementType === DocumentApp.ElementType.TEXT) {
       const oldText = element.asText().getText()
       const {newIndex, newIndexChanged, newText} = getNewText(index, indexChanged, oldText, targetIndex)
       index = newIndex
-      indexChanged = newIndexChanged      
+      indexChanged = newIndexChanged
       element.asText().setText(newText)
       deleting = index !== targetIndex && index !== 1 && newText.length === 0
     }

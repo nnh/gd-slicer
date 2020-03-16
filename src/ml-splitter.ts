@@ -34,3 +34,14 @@ export function getMaximumLanguageIndex(str: string): LanguageIndex {
   })
   return maximumIndex
 }
+
+export function getNewText(index: number, indexChanged: boolean, oldText: string, targetIndex: number) {
+  const newText = splitLanguageSentences(oldText).reverse().map(ls => {
+    if (ls.languageIndex !== undefined) {
+      index = ls.languageIndex
+      indexChanged = true
+    }
+    return { str: ls.str, fixedLanguageIndex: index } as FixedLanguagedString
+  }).filter(ls => ls.fixedLanguageIndex === targetIndex || ls.fixedLanguageIndex === 1).map(ls => ls.str).reverse().join('')
+  return {newIndex: index, newIndexChanged: indexChanged, newText}
+}
