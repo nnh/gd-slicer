@@ -35,7 +35,7 @@ function filterLanguage(body: Document.Body, targetIndex: number) {
     }
     return false
   }, (element, results) => {
-    if (results.indexOf(false) !== -1) {
+    if (results.indexOf(false) === -1) {
       // 子供を全部削除したら自身も殺してtrue を返す
       element.removeFromParent()
       return true
