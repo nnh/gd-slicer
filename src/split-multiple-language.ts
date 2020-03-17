@@ -19,24 +19,35 @@ function getMaximumLanguageIndexFromBody(body: Document.Body): number {
 
 function filterLanguage(body: Document.Body, targetIndex: number) {
   let index = 1
+  let deleting = false
   reverseChildren(body, (element, parent) => {
     const elementType = element.getType()
     let indexChanged = false
+    let oldText: string | undefined = undefined
     if (elementType === DocumentApp.ElementType.TEXT) {
-      const oldText = element.asText().getText()
+      oldText = element.asText().getText()
       const {newIndex, newIndexChanged, newText} = getNewText(index, indexChanged, oldText, targetIndex)
       index = newIndex
       indexChanged = newIndexChanged
-      element.asText().setText(newText)
-      if (index !== targetIndex && index !== 1 && newText.length === 0) {
+      if (oldText !== newText) {
+        element.asText().setText(newText)
+      }
+      deleting = index !== targetIndex && index !== 1 && newText.length === 0
+      if (deleting) {
         parent.removeChild(element)
-        return true
       }
     }
-    return false
+    if (elementType == DocumentApp.ElementType.TEXT) {
+      console.log({deleting, elementType: elementType.toString(), oldText, text: element.asText().getText()})
+    } else {
+      console.log({deleting, elementType: elementType.toString()})
+    }
+
+    return deleting
   }, (element, results) => {
-    if (results.indexOf(false) === -1) {
-      // 子供を全部削除したら自身も殺してtrue を返す
+    if (deleting && results.indexOf(false) === -1) {
+      // 最後の操作が削除 かつ 子供を全部削除したら自身も殺してtrue を返す
+      console.log({results})
       element.removeFromParent()
       return true
     } else {
@@ -45,22 +56,31 @@ function filterLanguage(body: Document.Body, targetIndex: number) {
   })
 }
 
+function splitMultipleLanguageByLanguageIndex(copiedId: string, i: number) {
+  const copiedDoc = DocumentApp.openById(copiedId)
+  filterLanguage(copiedDoc.getBody(), i)
+  copiedDoc.saveAndClose()
+}
+
 function splitMultipleLanguageById(documentId: string) {
   const doc = DocumentApp.openById(documentId)
   const maximumLanguageIndex = getMaximumLanguageIndexFromBody(doc.getBody())
-  const name = doc.getName()
   for (let i = 2; i < maximumLanguageIndex + 1; ++i) {
+    const name = doc.getName()
     const copiedName = name + '_' + i.toString()
-    const copiedId = copyFile(documentId, copiedName)
-    const copiedDoc = DocumentApp.openById(copiedId)
-    filterLanguage(copiedDoc.getBody(), i)
-    copiedDoc.saveAndClose()
+    const copiedId = copyFile(doc.getId(), copiedName)
+    splitMultipleLanguageByLanguageIndex(copiedId, i)
   }
 }
 
 function test() {
-  const documentId = "10Yiokp8UucMInZVl7e5n1ISTOEP69shA5u5vXBy7h3A"
-  splitMultipleLanguageById(documentId)
+  const documentId = "1NJyFVZ-T0aVHJ9Vxy9LLbQQo0nVYpOyboSa6B3K4BCc"
+  const doc = DocumentApp.openById(documentId)
+  const name = doc.getName()
+  const i = 2
+  const copiedName = name + '_' + i.toString()
+  const copiedId = copyFile(doc.getId(), copiedName)
+  splitMultipleLanguageByLanguageIndex(copiedId, i)
 }
 
 function splitMultipleLanguage() {
