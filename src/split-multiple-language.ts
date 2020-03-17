@@ -37,17 +37,17 @@ function filterLanguage(body: Document.Body, targetIndex: number) {
         parent.removeChild(element)
       }
     }
-    if (elementType == DocumentApp.ElementType.TEXT) {
-      console.log({deleting, elementType: elementType.toString(), oldText, text: element.asText().getText()})
-    } else {
-      console.log({deleting, elementType: elementType.toString()})
-    }
+    // if (elementType == DocumentApp.ElementType.TEXT) {
+    //   console.log({deleting, elementType: elementType.toString(), oldText, text: element.asText().getText()})
+    // } else {
+    //   console.log({deleting, elementType: elementType.toString()})
+    // }
 
     return deleting
   }, (element, results) => {
     if (deleting && results.indexOf(false) === -1) {
       // 最後の操作が削除 かつ 子供を全部削除したら自身も殺してtrue を返す
-      console.log({results})
+      // console.log({results})
       element.removeFromParent()
       return true
     } else {
