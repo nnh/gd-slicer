@@ -12,14 +12,14 @@ function getMaximumLanguageIndexFromBody(body: Document.Body): number {
         maximumLanguageIndex = Math.max(maximumLanguageIndex, index)
       }
     }
-  })
+    return undefined
+  }, () => {})
   return maximumLanguageIndex
 }
 
 function filterLanguage(body: Document.Body, targetIndex: number) {
-  let deleting = false
   let index = 1
-  reverseChildren(body, (element) => {
+  reverseChildren(body, (element, parent) => {
     const elementType = element.getType()
     let indexChanged = false
     if (elementType === DocumentApp.ElementType.TEXT) {
@@ -28,11 +28,19 @@ function filterLanguage(body: Document.Body, targetIndex: number) {
       index = newIndex
       indexChanged = newIndexChanged
       element.asText().setText(newText)
-      deleting = index !== targetIndex && index !== 1 && newText.length === 0
+      if (index !== targetIndex && index !== 1 && newText.length === 0) {
+        parent.removeChild(element)
+        return true
+      }
     }
-  }, (child, parent) => {
-    if (deleting && child.getType() !== DocumentApp.ElementType.PARAGRAPH) {
-      parent.removeChild(child)
+    return false
+  }, (element, results) => {
+    if (results.indexOf(false) !== -1) {
+      // 子供を全部削除したら自身も殺してtrue を返す
+      element.removeFromParent()
+      return true
+    } else {
+      return false
     }
   })
 }
