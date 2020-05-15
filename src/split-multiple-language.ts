@@ -1,5 +1,5 @@
 import { copyFile, reverseChildren } from './docs-utils'
-import { getMaximumLanguageIndex, FixedLanguagedString, splitLanguageSentences } from './ml-splitter'
+import { getMaximumLanguageIndex, getNewText } from './ml-splitter'
 import Document = GoogleAppsScript.Document
 
 function getMaximumLanguageIndexFromBody(body: Document.Body): number {
@@ -12,59 +12,75 @@ function getMaximumLanguageIndexFromBody(body: Document.Body): number {
         maximumLanguageIndex = Math.max(maximumLanguageIndex, index)
       }
     }
-  })
+    return undefined
+  }, () => {})
   return maximumLanguageIndex
 }
 
-export function getNewText(index: number, indexChanged: boolean, oldText: string, targetIndex: number) {
-  const newText = splitLanguageSentences(oldText).reverse().map(ls => {
-    if (ls.languageIndex !== undefined) {
-      index = ls.languageIndex
-      indexChanged = true
-    }
-    return { str: ls.str, fixedLanguageIndex: index } as FixedLanguagedString
-  }).filter(ls => ls.fixedLanguageIndex === targetIndex || ls.fixedLanguageIndex === 1).map(ls => ls.str).reverse().join('')
-  return {newIndex: index, newIndexChanged: indexChanged, newText}
-}
-
 function filterLanguage(body: Document.Body, targetIndex: number) {
-  let deleting = false
   let index = 1
-  reverseChildren(body, (element) => {    
+  let deleting = false
+  reverseChildren(body, (element, parent) => {
     const elementType = element.getType()
     let indexChanged = false
+    let oldText: string | undefined = undefined
     if (elementType === DocumentApp.ElementType.TEXT) {
-      const oldText = element.asText().getText()
+      oldText = element.asText().getText()
       const {newIndex, newIndexChanged, newText} = getNewText(index, indexChanged, oldText, targetIndex)
       index = newIndex
-      indexChanged = newIndexChanged      
-      element.asText().setText(newText)
+      indexChanged = newIndexChanged
+      if (oldText !== newText) {
+        element.asText().setText(newText)
+      }
       deleting = index !== targetIndex && index !== 1 && newText.length === 0
+      if (deleting) {
+        parent.removeChild(element)
+      }
     }
-    return index != targetIndex && !indexChanged
-  }, (child, parent) => {
-    if (deleting && child.getType() !== DocumentApp.ElementType.PARAGRAPH) {
-      parent.removeChild(child)
+    // if (elementType == DocumentApp.ElementType.TEXT) {
+    //   console.log({deleting, elementType: elementType.toString(), oldText, text: element.asText().getText()})
+    // } else {
+    //   console.log({deleting, elementType: elementType.toString()})
+    // }
+
+    return deleting
+  }, (element, results) => {
+    if (deleting && results.indexOf(false) === -1) {
+      // 最後の操作が削除 かつ 子供を全部削除したら自身も殺してtrue を返す
+      // console.log({results})
+      element.removeFromParent()
+      return true
+    } else {
+      return false
     }
   })
+}
+
+function splitMultipleLanguageByLanguageIndex(copiedId: string, i: number) {
+  const copiedDoc = DocumentApp.openById(copiedId)
+  filterLanguage(copiedDoc.getBody(), i)
+  copiedDoc.saveAndClose()
 }
 
 function splitMultipleLanguageById(documentId: string) {
   const doc = DocumentApp.openById(documentId)
   const maximumLanguageIndex = getMaximumLanguageIndexFromBody(doc.getBody())
-  const name = doc.getName()
   for (let i = 2; i < maximumLanguageIndex + 1; ++i) {
+    const name = doc.getName()
     const copiedName = name + '_' + i.toString()
-    const copiedId = copyFile(documentId, copiedName)
-    const copiedDoc = DocumentApp.openById(copiedId)
-    filterLanguage(copiedDoc.getBody(), i)
-    copiedDoc.saveAndClose()
+    const copiedId = copyFile(doc.getId(), copiedName)
+    splitMultipleLanguageByLanguageIndex(copiedId, i)
   }
 }
 
 function test() {
-  const documentId = "10Yiokp8UucMInZVl7e5n1ISTOEP69shA5u5vXBy7h3A"
-  splitMultipleLanguageById(documentId)
+  const documentId = "1NJyFVZ-T0aVHJ9Vxy9LLbQQo0nVYpOyboSa6B3K4BCc"
+  const doc = DocumentApp.openById(documentId)
+  const name = doc.getName()
+  const i = 2
+  const copiedName = name + '_' + i.toString()
+  const copiedId = copyFile(doc.getId(), copiedName)
+  splitMultipleLanguageByLanguageIndex(copiedId, i)
 }
 
 function splitMultipleLanguage() {

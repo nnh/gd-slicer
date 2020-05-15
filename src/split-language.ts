@@ -4,11 +4,9 @@ import Document = GoogleAppsScript.Document
 
 function splitChild(element: Document.Element, open: boolean): [boolean, boolean] {
   const elementType = element.getType()
-  console.log(elementType)
   switch (elementType) {
     case DocumentApp.ElementType.TEXT: {
       const [text, isOpen] = splitString(element.asText().getText(), open)
-      console.log(element.asText().getText(), open, text, isOpen)
       if (text === '') {
         return [isOpen, true]
       } else {
@@ -52,7 +50,6 @@ function splitChildren(parent: Document.Body | Document.TableCell | Document.Par
     const child = parent.getChild(i)
     const [isOpen, remove] = splitChild(child, open)
     open = isOpen
-    console.log({ i, child, open, isOpen, remove })
     if (remove) {
       parent.removeChild(child)
       i--;
