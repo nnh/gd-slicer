@@ -3,3 +3,4 @@
 /yarn-error.log
 /src/*.js
 /.log
+/dist/*.js
