@@ -83,6 +83,6 @@ function test() {
   splitMultipleLanguageByLanguageIndex(copiedId, i)
 }
 
-function splitMultipleLanguage() {
+export function splitMultipleLanguage() {
   splitMultipleLanguageById(DocumentApp.getActiveDocument().getId())
 }

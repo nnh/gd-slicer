@@ -1,10 +1,14 @@
 {
-  "name": "protocol-splitter",
+  "name": "gd-slicer",
   "version": "1.0.0",
-  "main": "index.js",
-  "license": "Private",
+  "main": "dist/main.js",
+  "license": "MIT",
   "dependencies": {
-    "@google/clasp": "*"
+    "@google/clasp": "*",
+    "gas-webpack-plugin": "^2.6.0",
+    "ts-loader": "^9.5.2",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^6.0.1"
   },
   "devDependencies": {
     "@types/chai": "*",
@@ -19,11 +23,13 @@
     "mocha": "*",
     "prettier": "*",
     "ts-mocha": "*",
-    "typescript": "*",
+    "typescript": "^5.7.3",
     "typescript-language-server": "*"
   },
   "scripts": {
     "start": "clasp push -w",
-    "test": "ts-mocha test/*.test.ts"
+    "push": "webpack && clasp push",
+    "test": "ts-mocha test/*.test.ts",
+    "build": "webpack"
   }
 }

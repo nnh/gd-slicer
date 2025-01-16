@@ -58,7 +58,7 @@ function splitChildren(parent: Document.Body | Document.TableCell | Document.Par
   return open
 }
 
-function splitLanguage() {
+export function splitLanguage() {
   const doc = DocumentApp.getActiveDocument()
   const documentId = doc.getId()
   const name = doc.getName()
