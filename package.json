@@ -1,8 +1,8 @@
 {
-  "name": "protocol-splitter",
+  "name": "gd-slicer",
   "version": "1.0.0",
-  "main": "index.js",
-  "license": "Private",
+  "main": "dist/main.js",
+  "license": "MIT",
   "dependencies": {
     "@google/clasp": "*",
     "gas-webpack-plugin": "^2.6.0",
