@@ -120,10 +120,10 @@ push 先のGAS を特定するために.clasp.json を生成する必要があ�
 ### 監視&push
 
 開発中は基本的にこちらを利用します.
-ファイルに変更があればTypeScript からGoogle Apps Script にトランスパイルし、Google Driver にpush します.
+TypeScript のソースを Webpack でビルドし、Google Apps Script 用に変換して Google Drive にプッシュします
 
-``` shell
-yarn start
+```shell
+yarn push
 ```
 
 ### テスト
@@ -136,4 +136,4 @@ yarn test
 License
 -------
 gd-slicer is licensed under the [MIT](#) license.  
-Copyright &copy; 2019, NHO Nagoya Medical Center and NPO-OSCR
+Copyright &copy; 2025, NHO Nagoya Medical Center and NPO-OSCR
