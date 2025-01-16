@@ -28,6 +28,7 @@
   },
   "scripts": {
     "start": "clasp push -w",
+    "push": "webpack && clasp push",
     "test": "ts-mocha test/*.test.ts",
     "build": "webpack"
   }
