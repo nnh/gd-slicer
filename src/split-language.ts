@@ -2,60 +2,80 @@ import { splitString } from './split-string'
 import { copyFile } from './docs-utils'
 import Document = GoogleAppsScript.Document
 
-function splitChild(element: Document.Element, open: boolean): [boolean, boolean] {
+interface SplitResult {
+  isOpen: boolean
+  remove: boolean
+}
+function splitChild(element: Document.Element, open: boolean): SplitResult {
   const elementType = element.getType()
   switch (elementType) {
     case DocumentApp.ElementType.TEXT: {
-      const [text, isOpen] = splitString(element.asText().getText(), open)
-      if (text === '') {
-        return [isOpen, true]
+      const previousText = element.asText().getText()
+      const [text, isOpen] = splitString(previousText, open)
+      if (previousText !== '' && text === '') {
+        return {isOpen, remove: true}
       } else {
-        element.asText().setText(text)
-        return [isOpen, false]
+        if (previousText !== text) {
+          element.asText().setText(text)
+        }
+        return {isOpen, remove: false}
       }
     }
     case DocumentApp.ElementType.TABLE:
       if (open) {
         let isOpen = true
+        let remove = true
         for (let r = 0; r < element.asTable().getNumRows(); ++r) {
           const row = element.asTable().getRow(r)
           for (let c = 0; c < row.getNumCells(); ++c) {
             const cell = row.getCell(c)
-            isOpen = splitChildren(cell, isOpen)
+            const res = splitChildren(cell, isOpen)
+            isOpen = res.isOpen
+            if (!res.remove) remove = false
           }
         }
-        return [isOpen, false]
+        return {isOpen, remove}
       } else {
-        return [false, true]
+        return {isOpen: false, remove: true}
       }
     case DocumentApp.ElementType.LIST_ITEM: {
-      open = splitChildren(element.asListItem(), open)
-      return [open, false]
+      const {isOpen, remove} = splitChildren(element.asListItem(), open)
+      return {isOpen, remove}
     }
     case DocumentApp.ElementType.PARAGRAPH: {
-      open = splitChildren(element.asParagraph(), open)
-      return [open, false]
+      const res = splitChildren(element.asParagraph(), open)
+      return res
     }
     default:
       if (open) {
-        return [true, false]
+        return {isOpen: true, remove: false}
       } else {
-        return [false, true]
+        return {isOpen: false, remove: true}
       }
   }
 }
 
-function splitChildren(parent: Document.Body | Document.TableCell | Document.Paragraph | Document.ListItem, open: boolean): boolean {
-  for (let i = 0; i < parent.getNumChildren(); ++i) {
-    const child = parent.getChild(i)
-    const [isOpen, remove] = splitChild(child, open)
-    open = isOpen
-    if (remove) {
-      parent.removeChild(child)
-      i--;
+function splitChildren(parent: Document.Body | Document.TableCell | Document.Paragraph | Document.ListItem, open: boolean): SplitResult {
+  if (parent.getNumChildren() === 0) {
+    return {isOpen: open, remove: !open}
+  } else {
+  let remove = true
+    for (let i = 0; i < parent.getNumChildren(); ++i) {
+      const child = parent.getChild(i)
+      const res = splitChild(child, open)
+      open = res.isOpen
+      if (res.remove) {
+        // BODY の最終セクションは削除できない
+        if (!(parent.getType() === DocumentApp.ElementType.BODY_SECTION && (i + 1 === parent.getNumChildren()))) {
+          parent.removeChild(child)
+          i--;
+        }
+      } else {
+        remove = false
+      }
     }
+    return {isOpen: open, remove}
   }
-  return open
 }
 
 export function splitLanguage() {
