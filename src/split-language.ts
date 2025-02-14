@@ -16,7 +16,9 @@ function splitChild(element: Document.Element, open: boolean): SplitResult {
         return {isOpen, remove: true}
       } else {
         if (previousText !== text) {
+          const saveAttributes: Object = element.asText().getAttributes();
           element.asText().setText(text)
+          element.asText().setAttributes(saveAttributes);
         }
         return {isOpen, remove: false}
       }
